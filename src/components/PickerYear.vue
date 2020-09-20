@@ -6,17 +6,17 @@
       :next="nextDecade"
       :previous="previousDecade"
     >
-      <span slot="headerContent">
-        {{ getPageDecade }}
-      </span>
-      <slot
-        slot="nextIntervalBtn"
-        name="nextIntervalBtn"
-      />
-      <slot
-        slot="prevIntervalBtn"
-        name="prevIntervalBtn"
-      />
+      <template #headerContent>
+        <span>
+          {{ getPageDecade }}
+        </span>
+      </template>
+      <template #nextIntervalBtn>
+        <slot name="nextIntervalBtn" />
+      </template>
+      <template #prevIntervalBtn>
+        <slot name="prevIntervalBtn" />
+      </template>
     </PickerHeader>
 
     <span
@@ -40,12 +40,13 @@ export default {
   mixins: [
     pickerMixin,
   ],
+  emits: ['select-year', 'changed-decade'],
   computed: {
     /**
      * set an object with years for a decade
      * @return {Object[]}
      */
-    years() {
+    years () {
       const d = this.pageDate
       const years = []
       // set up a new date object to the beginning of the current 'page'7
@@ -73,7 +74,7 @@ export default {
      * Get decade name on current page.
      * @return {String}
      */
-    getPageDecade() {
+    getPageDecade () {
       const decadeStart = Math.floor(this.utils.getFullYear(this.pageDate) / 10) * 10
       const decadeEnd = decadeStart + 9
       const { yearSuffix } = this.translation
@@ -85,7 +86,7 @@ export default {
      * Emits a selectYear event
      * @param {Object} year
      */
-    selectYear(year) {
+    selectYear (year) {
       if (!year.isDisabled) {
         this.$emit('select-year', year)
         return true
@@ -96,7 +97,7 @@ export default {
      * Changes the year up or down
      * @param {Number} incrementBy
      */
-    changeYear(incrementBy) {
+    changeYear (incrementBy) {
       const date = this.pageDate
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
       this.$emit('changed-decade', date)
@@ -104,7 +105,7 @@ export default {
     /**
      * Decrements the decade
      */
-    previousDecade() {
+    previousDecade () {
       if (!this.isPreviousDisabled()) {
         this.changeYear(-10)
         return true
@@ -115,7 +116,7 @@ export default {
      * Checks if the next year is disabled or not
      * @return {Boolean}
      */
-    isPreviousDisabled() {
+    isPreviousDisabled () {
       if (!this.disabledDates || !this.disabledDates.to) {
         return false
       }
@@ -125,7 +126,7 @@ export default {
     /**
      * Increments the decade
      */
-    nextDecade() {
+    nextDecade () {
       if (!this.isNextDisabled()) {
         this.changeYear(10)
         return true
@@ -136,7 +137,7 @@ export default {
      * Checks if the next decade is disabled or not
      * @return {Boolean}
      */
-    isNextDisabled() {
+    isNextDisabled () {
       if (!this.disabledDates || !this.disabledDates.from) {
         return false
       }
@@ -149,7 +150,7 @@ export default {
      * @param {Date} date
      * @return {Boolean}
      */
-    isSelectedYear(date) {
+    isSelectedYear (date) {
       return this.selectedDate
         && this.utils.getFullYear(this.selectedDate) === this.utils.getFullYear(date)
     },
@@ -158,7 +159,7 @@ export default {
      * @param {Date} date
      * @return {Boolean}
      */
-    isDisabledYear(date) {
+    isDisabledYear (date) {
       return isYearDisabled(date, this.disabledDates, this.utils)
     },
   },

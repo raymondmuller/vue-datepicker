@@ -84,6 +84,7 @@ export default {
       },
     },
   },
+  emits: ['show-calendar', 'focus', 'typed-date', 'blur', 'close-calendar', 'clear-date'],
   data() {
     const constructedDateUtils = makeDateUtils(this.useUtc)
     return {

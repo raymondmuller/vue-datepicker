@@ -6,22 +6,23 @@
       :next="nextMonth"
       :previous="previousMonth"
     >
-      <span
-        slot="headerContent"
-        :class="allowedToShowView('month') ? 'up' : ''"
-        class="day__month_btn"
-        @click="showPickerCalendar('month')"
-      >
-        {{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}
-      </span>
-      <slot
-        slot="nextIntervalBtn"
-        name="nextIntervalBtn"
-      />
-      <slot
-        slot="prevIntervalBtn"
-        name="prevIntervalBtn"
-      />
+      <template #headerContent>
+        <span
+          :class="allowedToShowView('month') ? 'up' : ''"
+          class="day__month_btn"
+          @click="showPickerCalendar('month')"
+        >
+          {{ isYmd ? currYearName : currMonthName }} {{ isYmd ? currMonthName : currYearName }}
+        </span>
+      </template>
+
+      <template #nextIntervalBtn>
+        <slot name="nextIntervalBtn" />
+      </template>
+
+      <template #prevIntervalBtn>
+        <slot name="prevIntervalBtn" />
+      </template>
     </PickerHeader>
     <div :class="isRtl ? 'flex-rtl' : ''">
       <span
@@ -37,17 +38,16 @@
           :key="d.timestamp"
           class="cell day blank"
         />
-        <!--    TODO change grid system setup with for example flex to remove the magic    -->
-        <!--    the comment arrows in the next two lines are necessary magic to remove the WS   -->
-      </template><!--
-      --><span
-      v-for="day in days"
-      :key="day.timestamp"
-      :class="dayClasses(day)"
-      class="cell day"
-      @click="selectDate(day)"
-      v-html="dayCellContent(day)"
-    />
+      </template>
+
+      <span
+        v-for="day in days"
+        :key="day.timestamp"
+        :class="dayClasses(day)"
+        class="cell day"
+        @click="selectDate(day)"
+        v-html="dayCellContent(day)"
+      />
     </div>
     <slot name="calendarFooterDay" />
   </div>
@@ -72,7 +72,7 @@ export default {
     },
     highlighted: {
       type: Object,
-      default() {
+      default () {
         return {}
       },
     },
@@ -81,12 +81,13 @@ export default {
       default: false,
     },
   },
+  emits: ['selected-disabled', 'select-date', 'changed-month'],
   computed: {
     /**
      * Returns an array of day names
      * @return {String[]}
      */
-    daysOfWeek() {
+    daysOfWeek () {
       if (this.mondayFirst) {
         const tempDays = this.translation.days.slice()
         tempDays.push(tempDays.shift())
@@ -99,7 +100,7 @@ export default {
      * Used to show amount of empty cells before the first in the day calendar layout
      * @return {Number}
      */
-    blankDays() {
+    blankDays () {
       const d = this.pageDate
       const dObj = this.useUtc
         ? new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1))
@@ -113,7 +114,7 @@ export default {
      * Set an object with all days inside the month
      * @return {Object[]}
      */
-    days() {
+    days () {
       const d = this.pageDate
       const days = []
       // set up a new date object to the beginning of the current 'page'
@@ -145,7 +146,7 @@ export default {
      * Gets the name of the month the current page is on
      * @return {String}
      */
-    currMonthName() {
+    currMonthName () {
       const monthName = this.fullMonthName ? this.translation.months : this.translation.monthsAbbr
       return this.utils.getMonthNameAbbr(this.utils.getMonth(this.pageDate), monthName)
     },
@@ -153,7 +154,7 @@ export default {
      * Gets the name of the year that current page is on
      * @return {Number}
      */
-    currYearName() {
+    currYearName () {
       const { yearSuffix } = this.translation
       return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
     },
@@ -161,7 +162,7 @@ export default {
      * Is this translation using year/month/day format?
      * @return {Boolean}
      */
-    isYmd() {
+    isYmd () {
       return this.translation.ymd && this.translation.ymd === true
     },
   },
@@ -170,7 +171,7 @@ export default {
      * Emits a selectDate event
      * @param {Object} date
      */
-    selectDate(date) {
+    selectDate (date) {
       if (date.isDisabled) {
         this.$emit('selected-disabled', date)
         return false
@@ -181,14 +182,14 @@ export default {
     /**
      * @return {Number}
      */
-    getPageMonth() {
+    getPageMonth () {
       return this.utils.getMonth(this.pageDate)
     },
     /**
      * Change the page month
      * @param {Number} incrementBy
      */
-    changeMonth(incrementBy) {
+    changeMonth (incrementBy) {
       const date = this.pageDate
       this.utils.setMonth(date, this.utils.getMonth(date) + incrementBy)
       this.$emit('changed-month', date)
@@ -196,7 +197,7 @@ export default {
     /**
      * Decrement the page month
      */
-    previousMonth() {
+    previousMonth () {
       if (!this.isPreviousDisabled()) {
         this.changeMonth(-1)
       }
@@ -205,7 +206,7 @@ export default {
      * Is the previous month disabled?
      * @return {Boolean}
      */
-    isPreviousDisabled() {
+    isPreviousDisabled () {
       if (!this.disabledDates || !this.disabledDates.to) {
         return false
       }
@@ -216,7 +217,7 @@ export default {
     /**
      * Increment the current page month
      */
-    nextMonth() {
+    nextMonth () {
       if (!this.isNextDisabled()) {
         this.changeMonth(+1)
       }
@@ -225,7 +226,7 @@ export default {
      * Is the next month disabled?
      * @return {Boolean}
      */
-    isNextDisabled() {
+    isNextDisabled () {
       if (!this.disabledDates || !this.disabledDates.from) {
         return false
       }
@@ -238,7 +239,7 @@ export default {
      * @param {Date} dObj to check if selected
      * @return {Boolean}
      */
-    isSelectedDate(dObj) {
+    isSelectedDate (dObj) {
       return this.selectedDate && this.utils.compareDates(this.selectedDate, dObj)
     },
     /**
@@ -246,7 +247,7 @@ export default {
      * @param {Date} date to check if disabled
      * @return {Boolean}
      */
-    isDisabledDate(date) {
+    isDisabledDate (date) {
       return isDateDisabled(date, this.disabledDates, this.utils)
     },
     /**
@@ -255,7 +256,7 @@ export default {
      * @param {Date} date to check if highlighted
      * @return {Boolean}
      */
-    isHighlightedDate(date) {
+    isHighlightedDate (date) {
       const dateWithoutTime = this.utils.resetDateTime(date)
       if (
         !(this.highlighted && this.highlighted.includeDisabled)
@@ -311,7 +312,7 @@ export default {
      * @param {Object} day
      * @return {Object}
      */
-    dayClasses(day) {
+    dayClasses (day) {
       return {
         selected: day.isSelected,
         disabled: day.isDisabled,
@@ -330,7 +331,7 @@ export default {
      * @param {Date} date start highlight
      * @return {Boolean}
      */
-    isHighlightStart(date) {
+    isHighlightStart (date) {
       return this.isHighlightedDate(date)
         && (this.highlighted.from instanceof Date)
         && (this.utils.getFullYear(this.highlighted.from) === this.utils.getFullYear(date))
@@ -343,7 +344,7 @@ export default {
      * @param {Date} date end highlight
      * @return {Boolean}
      */
-    isHighlightEnd(date) {
+    isHighlightEnd (date) {
       return this.isHighlightedDate(date)
         && (this.highlighted.to instanceof Date)
         && (this.utils.getFullYear(this.highlighted.to) === this.utils.getFullYear(date))
@@ -355,7 +356,7 @@ export default {
      * @param  {all}  prop
      * @return {Boolean}
      */
-    isDefined(prop) {
+    isDefined (prop) {
       return typeof prop !== 'undefined' && prop
     },
   },

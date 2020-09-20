@@ -39,14 +39,14 @@
       @blur="onBlur"
       @focus="onFocus"
     >
-      <slot
-        slot="beforeDateInput"
-        name="beforeDateInput"
-      />
-      <slot
-        slot="afterDateInput"
-        name="afterDateInput"
-      />
+      <template #beforeDateInput>
+        <slot name="beforeDateInput" />
+      </template>
+      <template #afterDateInput>
+        <slot
+          name="afterDateInput"
+        />
+      </template>
     </DateInput>
 
     <template v-if="isOpen">
@@ -67,56 +67,44 @@
           :page-timestamp="pageTimestamp"
           :is-rtl="isRtl"
           :use-utc="useUtc"
-
           :show-header="showHeader"
           :full-month-name="fullMonthName"
           :monday-first="mondayFirst"
           :day-cell-content="dayCellContent"
-
           @select-date="selectDate"
           @changed-month="handleChangedMonthFromDayPicker"
           @selected-disabled="selectDisabledDate"
-
           @select-month="selectMonth"
           @changed-year="setPageDate"
           @show-month-calendar="showSpecificCalendar('Month')"
-
           @select-year="selectYear"
           @changed-decade="setPageDate"
           @show-year-calendar="showSpecificCalendar('Year')"
         >
-          <slot
-            slot="beforeCalendarHeaderDay"
-            name="beforeCalendarHeaderDay"
-          />
-          <slot
-            slot="calendarFooterDay"
-            name="calendarFooterDay"
-          />
-          <slot
-            slot="beforeCalendarHeaderMonth"
-            name="beforeCalendarHeaderMonth"
-          />
-          <slot
-            slot="calendarFooterMonth"
-            name="calendarFooterMonth"
-          />
-          <slot
-            slot="beforeCalendarHeaderYear"
-            name="beforeCalendarHeaderYear"
-          />
-          <slot
-            slot="calendarFooterYear"
-            name="calendarFooterYear"
-          />
-          <slot
-            slot="nextIntervalBtn"
-            name="nextIntervalBtn"
-          />
-          <slot
-            slot="prevIntervalBtn"
-            name="prevIntervalBtn"
-          />
+          <template #beforeCalendarHeaderDay>
+            <slot name="beforeCalendarHeaderDay" />
+          </template>
+          <template #calendarFooterDay>
+            <slot name="calendarFooterDay" />
+          </template>
+          <template #beforeCalendarHeaderMonth>
+            <slot name="beforeCalendarHeaderMonth" />
+          </template>
+          <template #calendarFooterMonth>
+            <slot name="calendarFooterMonth" />
+          </template>
+          <template #beforeCalendarHeaderYear>
+            <slot name="beforeCalendarHeaderYear" />
+          </template>
+          <template #calendarFooterYear>
+            <slot name="calendarFooterYear" />
+          </template>
+          <template #nextIntervalBtn>
+            <slot name="nextIntervalBtn" />
+          </template>
+          <template #prevIntervalBtn>
+            <slot name="prevIntervalBtn" />
+          </template>
         </component>
         <slot name="calendarFooter" />
       </div>
@@ -159,7 +147,7 @@ export default {
     },
     disabledDates: {
       type: Object,
-      default() {
+      default () {
         return {}
       },
     },
@@ -180,7 +168,7 @@ export default {
     },
     highlighted: {
       type: Object,
-      default() {
+      default () {
         return {}
       },
     },
@@ -230,7 +218,8 @@ export default {
       default: '',
     },
   },
-  data() {
+  emits: ['opened', 'selected', 'update:modelValue', 'selected', 'input', 'cleared', 'selected-disabled', 'changed-month', 'changed-year', 'closed', 'blur', 'focus'],
+  data () {
     // const startDate = this.openDate ? new Date(this.openDate) : new Date()
     const constructedDateUtils = makeDateUtils(this.useUtc)
     let startDate
@@ -262,47 +251,47 @@ export default {
     }
   },
   computed: {
-    computedInitialView() {
+    computedInitialView () {
       if (!this.initialView) {
         return this.minimumView
       }
 
       return this.initialView
     },
-    pageDate() {
+    pageDate () {
       return new Date(this.pageTimestamp)
     },
 
-    translation() {
+    translation () {
       return this.language
     },
 
-    isOpen() {
+    isOpen () {
       return this.currentPicker !== ''
     },
-    isInline() {
+    isInline () {
       return !!this.inline
     },
-    isRtl() {
+    isRtl () {
       return this.translation.rtl === true
     },
   },
   watch: {
-    value(value) {
+    value (value) {
       this.setValue(value)
     },
-    openDate() {
+    openDate () {
       this.setPageDate()
     },
-    initialView() {
+    initialView () {
       this.setInitialView()
     },
   },
-  mounted() {
+  mounted () {
     this.init()
   },
   methods: {
-    setPickerPosition() {
+    setPickerPosition () {
       this.$nextTick(() => {
         const calendar = this.$refs.datepicker
         if (calendar) {
@@ -348,7 +337,7 @@ export default {
      * Called in the event that the user navigates to date pages and
      * closes the picker without selecting a date.
      */
-    resetDefaultPageDate() {
+    resetDefaultPageDate () {
       if (this.selectedDate === null) {
         this.setPageDate()
         return
@@ -359,7 +348,7 @@ export default {
      * Effectively a toggle to show/hide the calendar
      * @return {mixed}
      */
-    showCalendar() {
+    showCalendar () {
       if (this.disabled || this.isInline) {
         return false
       }
@@ -376,7 +365,7 @@ export default {
     /**
      * Sets the initial picker page view: day, month or year
      */
-    setInitialView() {
+    setInitialView () {
       const initialView = this.computedInitialView
       if (!this.allowedToShowView(initialView)) {
         throw new Error(`initialView '${this.initialView}' cannot be rendered based on minimum '${this.minimumView}' and maximum '${this.maximumView}'`)
@@ -398,7 +387,7 @@ export default {
      * @param {String} view
      * @return {Boolean}
      */
-    allowedToShowView(view) {
+    allowedToShowView (view) {
       const views = [
         'day',
         'month',
@@ -414,7 +403,7 @@ export default {
      * Show a specific picker
      * @return {Boolean}
      */
-    showSpecificCalendar(type) {
+    showSpecificCalendar (type) {
       if (type) {
         if (!this.allowedToShowView(type.toLowerCase())) {
           return false
@@ -430,27 +419,27 @@ export default {
      * Set the selected date
      * @param {Number} timestamp
      */
-    setDate(timestamp) {
+    setDate (timestamp) {
       const date = new Date(timestamp)
       this.selectedDate = date
       this.setPageDate(date)
       this.$emit('selected', date)
-      this.$emit('input', date)
+      this.$emit('update:modelValue', date)
     },
     /**
      * Clear the selected date
      */
-    clearDate() {
+    clearDate () {
       this.selectedDate = null
       this.setPageDate()
       this.$emit('selected', null)
-      this.$emit('input', null)
+      this.$emit('update:modelValue', null)
       this.$emit('cleared')
     },
     /**
      * @param {Object} date
      */
-    selectDate(date) {
+    selectDate (date) {
       this.setDate(date.timestamp)
       if (!this.isInline) {
         this.close(true)
@@ -460,13 +449,13 @@ export default {
     /**
      * @param {Object} date
      */
-    selectDisabledDate(date) {
+    selectDisabledDate (date) {
       this.$emit('selected-disabled', date)
     },
     /**
      * @param {Object} month
      */
-    selectMonth(month) {
+    selectMonth (month) {
       const date = new Date(month.timestamp)
       if (this.allowedToShowView('day')) {
         this.setPageDate(date)
@@ -479,7 +468,7 @@ export default {
     /**
      * @param {Object} year
      */
-    selectYear(year) {
+    selectYear (year) {
       const date = new Date(year.timestamp)
       if (this.allowedToShowView('month')) {
         this.setPageDate(date)
@@ -493,7 +482,7 @@ export default {
      * Set the datepicker value
      * @param {Date|String|Number|null} date
      */
-    setValue(date) {
+    setValue (date) {
       let dateTemp = date
       if (typeof dateTemp === 'string' || typeof dateTemp === 'number') {
         const parsed = new Date(dateTemp)
@@ -510,7 +499,7 @@ export default {
     /**
      * Sets the date that the calendar should open on
      */
-    setPageDate(date) {
+    setPageDate (date) {
       let dateTemp = date
       if (!dateTemp) {
         if (this.openDate) {
@@ -525,21 +514,21 @@ export default {
     /**
      * Handles a month change from the day picker
      */
-    handleChangedMonthFromDayPicker(date) {
+    handleChangedMonthFromDayPicker (date) {
       this.setPageDate(date)
       this.$emit('changed-month', date)
     },
     /**
      * Set the date from a typedDate event
      */
-    setTypedDate(date) {
+    setTypedDate (date) {
       this.setDate(date.getTime())
     },
     /**
      * Close all calendar layers
      * @param {Boolean} full - emit close event
      */
-    close(full = false) {
+    close (full = false) {
       this.showSpecificCalendar()
       if (!this.isInline) {
         if (full) {
@@ -550,7 +539,7 @@ export default {
     /**
      * Initiate the component
      */
-    init() {
+    init () {
       if (this.value) {
         this.setValue(this.value)
       }
@@ -558,10 +547,10 @@ export default {
         this.setInitialView()
       }
     },
-    onBlur() {
+    onBlur () {
       this.$emit('blur')
     },
-    onFocus() {
+    onFocus () {
       this.$emit('focus')
     },
   },
@@ -569,5 +558,5 @@ export default {
 
 </script>
 <style lang="scss">
-@import '../styles/style.scss';
+@import "../styles/style.scss";
 </style>

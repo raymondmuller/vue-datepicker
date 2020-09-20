@@ -6,22 +6,22 @@
       :next="nextYear"
       :previous="previousYear"
     >
-      <span
-        slot="headerContent"
-        :class="allowedToShowView('year') ? 'up' : ''"
-        class="month__year_btn"
-        @click="showPickerCalendar('year')"
-      >
-        {{ pageYearName }}
-      </span>
-      <slot
-        slot="nextIntervalBtn"
-        name="nextIntervalBtn"
-      />
-      <slot
-        slot="prevIntervalBtn"
-        name="prevIntervalBtn"
-      />
+      <template #headerContent>
+        <span
+          :class="allowedToShowView('year') ? 'up' : ''"
+          class="month__year_btn"
+          @click="showPickerCalendar('year')"
+        >
+          {{ pageYearName }}
+        </span>
+      </template>
+      <template #nextIntervalBtn>
+        <slot name="nextIntervalBtn" />
+      </template>
+
+      <template #prevIntervalBtn>
+        <slot name="prevIntervalBtn" />
+      </template>
     </PickerHeader>
     <span
       v-for="month in months"
@@ -44,12 +44,13 @@ export default {
   mixins: [
     pickerMixin,
   ],
+  emits: ['select-month', 'changed-year'],
   computed: {
     /**
      * set an object with all months
      * @return {Object[]}
      */
-    months() {
+    months () {
       const d = this.pageDate
       const months = []
       // set up a new date object to the beginning of the current 'page'
@@ -71,7 +72,7 @@ export default {
      * Get year name on current page.
      * @return {String}
      */
-    pageYearName() {
+    pageYearName () {
       const { yearSuffix } = this.translation
       return `${this.utils.getFullYear(this.pageDate)}${yearSuffix}`
     },
@@ -81,7 +82,7 @@ export default {
      * Emits a selectMonth event
      * @param {Object} month
      */
-    selectMonth(month) {
+    selectMonth (month) {
       if (!month.isDisabled) {
         this.$emit('select-month', month)
         return true
@@ -92,7 +93,7 @@ export default {
      * Changes the year up or down
      * @param {Number} incrementBy
      */
-    changeYear(incrementBy) {
+    changeYear (incrementBy) {
       const date = this.pageDate
       this.utils.setFullYear(date, this.utils.getFullYear(date) + incrementBy)
       this.$emit('changed-year', date)
@@ -100,7 +101,7 @@ export default {
     /**
      * Decrements the year
      */
-    previousYear() {
+    previousYear () {
       if (!this.isPreviousDisabled()) {
         this.changeYear(-1)
       }
@@ -109,7 +110,7 @@ export default {
      * Checks if the previous year is disabled or not
      * @return {Boolean}
      */
-    isPreviousDisabled() {
+    isPreviousDisabled () {
       if (!this.disabledDates || !this.disabledDates.to) {
         return false
       }
@@ -118,7 +119,7 @@ export default {
     /**
      * Increments the year
      */
-    nextYear() {
+    nextYear () {
       if (!this.isNextDisabled()) {
         this.changeYear(1)
       }
@@ -127,7 +128,7 @@ export default {
      * Checks if the next year is disabled or not
      * @return {Boolean}
      */
-    isNextDisabled() {
+    isNextDisabled () {
       if (!this.disabledDates || !this.disabledDates.from) {
         return false
       }
@@ -140,7 +141,7 @@ export default {
      * @param {Date}
      * @return {Boolean}
      */
-    isSelectedMonth(date) {
+    isSelectedMonth (date) {
       return (this.selectedDate
         && this.utils.getFullYear(this.selectedDate) === this.utils.getFullYear(date)
         && this.utils.getMonth(this.selectedDate) === this.utils.getMonth(date))
@@ -150,7 +151,7 @@ export default {
      * @param {Date}
      * @return {Boolean}
      */
-    isDisabledMonth(date) {
+    isDisabledMonth (date) {
       return isMonthDisabled(date, this.disabledDates, this.utils)
     },
   },

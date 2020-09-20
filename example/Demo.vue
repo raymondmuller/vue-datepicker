@@ -209,11 +209,11 @@
         <h5>Settings</h5>
         <select v-model="language">
           <option
-            v-for="(language, key) in languages"
+            v-for="(lan, key) in languages"
             :key="key"
             :value="key"
           >
-            {{ language.language }}
+            {{ lan.language }}
           </option>
         </select>
       </div>
@@ -298,8 +298,8 @@
 </template>
 
 <script>
-import Datepicker from '~/components/Datepicker'
-import * as lang from '~/locale/index'
+import Datepicker from '@/components/Datepicker'
+import * as lang from '@/locale/index'
 
 const state = {
   date1: new Date(),
@@ -444,8 +444,6 @@ export default {
 </script>
 
 <style>
-
-@import url('https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css');
 
 body {
   font-family: 'Helvetica Neue Light', Helvetica, sans-serif;
